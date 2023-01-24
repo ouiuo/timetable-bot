@@ -2,8 +2,10 @@ package com.ouiuo.timetablebot.telegrambot;
 
 import com.ouiuo.timetablebot.model.TrainingPair;
 import com.ouiuo.timetablebot.service.TimetableService;
+import com.ouiuo.timetablebot.service.UserService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -13,10 +15,13 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -25,20 +30,18 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final TelegramBotsApi telegramBotsApi;
 
     private final String BOT_NAME = "РГЭУ (РИНХ) Расписание";
+    private final String TOKEN;
 
-    private final String TOKEN = "${telegram.token}";
-
-    @Autowired
-    private TimetableService timetableService;
+    private final TimetableService timetableService;
+    private final UserService userService;
 
     @SneakyThrows
-    public TelegramBot(TelegramBotsApi telegramBotsApi) {
+    public TelegramBot(TelegramBotsApi telegramBotsApi, @Value("${telegram.token}") String token, TimetableService timetableService, UserService userService) {
         this.telegramBotsApi = telegramBotsApi;
+        TOKEN = token;
         telegramBotsApi.registerBot(this);
-        List<BotCommand> botCommandList = new ArrayList<>();
-        botCommandList.add(new BotCommand("/today", "Today's classes"));
-        botCommandList.add(new BotCommand("/tomorrow", "Tomorrow's classes"));
-        botCommandList.add(new BotCommand("/cringe", "Ohno cringe"));
+        this.timetableService = timetableService;
+        this.userService = userService;
     }
 
     @Override
@@ -53,9 +56,18 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        var msg = update.getMessage();
-        var user = msg.getFrom();
-        String msgText = msg.getText();
+        User user = null;
+        String msgText = "";
+        if (update.hasMessage()) {
+            var msg = update.getMessage();
+            user = msg.getFrom();
+            msgText = msg.getText();
+        } else if (update.hasCallbackQuery()) {
+            var callbackQuery = update.getCallbackQuery();
+            user = callbackQuery.getFrom();
+            msgText = callbackQuery.getData();
+        }
+
         if (msgText.contains("/today")) {
             sendList(timetableService.getToday(), user);
         } else if (msgText.contains("/tomorrow")) {
@@ -66,24 +78,51 @@ public class TelegramBot extends TelegramLongPollingBot {
             sendText(user.getId(), "The command not supported. \n" +
                     "/today");
         }
+        userService.updateOnline(user);
     }
 
+    @SneakyThrows
     private void sendList(List<TrainingPair> trainingPairs, User user) {
         Date lastUpdate = null;
+        StringBuffer wholeMsg = new StringBuffer();
+        List<List<InlineKeyboardButton>> classesList = new ArrayList<>();
         for (TrainingPair pair : trainingPairs) {
-            sendText(user.getId(), pair.toString());
+            sendText(user.getId(), pair.toStringBuffer().toString());
             lastUpdate = pair.getUpdateDate();
         }
-        sendText(user.getId(), "last update: " + lastUpdate + "\n" +
-                "/today");
+        sendTextWithButtons(user.getId(), "Last update: " + lastUpdate);
+        //sendText(user.getId(), wholeMsg.toString());
+    }
+
+    public void sendTextWithButtons(Long who, String what) throws TelegramApiException {
+        SendMessage sm = SendMessage.builder()
+                .chatId(who.toString())
+                .text(what)
+                .replyMarkup(new InlineKeyboardMarkup(Collections.singletonList(getTodayTomorrowButtons())))
+                .build();
+
+        execute(sm);
     }
 
     @SneakyThrows
     public void sendText(Long who, String what) {
         SendMessage sm = SendMessage.builder()
                 .chatId(who.toString())
-                .text(what).build();
+                .text(what)
+                .build();
+
         execute(sm);
+    }
+
+    private List<InlineKeyboardButton> getTodayTomorrowButtons() {
+        ArrayList<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
+        inlineKeyboardButtons.add(inlineKeyboardButtonCreator("Сегодня", "/today"));
+        inlineKeyboardButtons.add(inlineKeyboardButtonCreator("Завтра", "/tomorrow"));
+        return inlineKeyboardButtons;
+    }
+
+    private InlineKeyboardButton inlineKeyboardButtonCreator(String text, String callbackData) {
+        return InlineKeyboardButton.builder().text(text).callbackData(callbackData).build();
     }
 
     @SneakyThrows

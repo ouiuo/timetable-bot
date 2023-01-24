@@ -34,4 +34,4 @@ build/
 /.mvn/
 /mvnw.cmd
 /mvnw
-/src/main/java/docker/*.jar
+/src/main/docker/*.jar
