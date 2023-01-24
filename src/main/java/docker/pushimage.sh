@@ -1,0 +1,1 @@
+docker push ouiuo/timetable-bot:0.5
