@@ -20,10 +20,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
@@ -84,14 +82,16 @@ public class TelegramBot extends TelegramLongPollingBot {
     @SneakyThrows
     private void sendList(List<TrainingPair> trainingPairs, User user) {
         Date lastUpdate = null;
-        StringBuffer wholeMsg = new StringBuffer();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy \nEEEE", new Locale("ru"));
         List<List<InlineKeyboardButton>> classesList = new ArrayList<>();
+        if (!trainingPairs.isEmpty()) {
+            sendText(user.getId(), "Распиание на " +  simpleDateFormat.format(trainingPairs.get(0).getStartDate()));
+        }
         for (TrainingPair pair : trainingPairs) {
             sendText(user.getId(), pair.toStringBuffer().toString());
             lastUpdate = pair.getUpdateDate();
         }
         sendTextWithButtons(user.getId(), "Last update: " + lastUpdate);
-        //sendText(user.getId(), wholeMsg.toString());
     }
 
     public void sendTextWithButtons(Long who, String what) throws TelegramApiException {
