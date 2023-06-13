@@ -1,6 +1,5 @@
 package com.ouiuo.timetablebot.model;
 
-import com.google.common.base.Strings;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,7 +13,6 @@ import java.util.Date;
 @Entity(name = "classes")
 public class TrainingPair {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String className;
     private String lectureName;
@@ -37,7 +35,7 @@ public class TrainingPair {
     public StringBuffer toStringBuffer() {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         StringBuffer stringBuffer = new StringBuffer()
-                .append(className, 0, 16).append(" ")
+                .append(className, 0, Math.min(className.length(), 16)).append(" ")
                 .append(classType).append(" ")
                 .append(addressName).append("\n")
                 .append(sdf.format(startDate)).append("-").append(sdf.format(endDate)).append("\n")
