@@ -1,6 +1,6 @@
 package com.ouiuo.timetablebot.telegrambot.keyboardcommands;
 
-import com.ouiuo.timetablebot.service.HistoryService;
+import com.ouiuo.timetablebot.model.UserModel;
 import com.ouiuo.timetablebot.service.TimetableService;
 import com.ouiuo.timetablebot.service.UserService;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.KeyboardCommands;
@@ -11,8 +11,8 @@ import org.telegram.telegrambots.meta.api.objects.User;
 @Service
 public class KeyboardCommandsProcessorWeekImpl extends KeyboardCommandsProcessorAbstract {
 
-    public KeyboardCommandsProcessorWeekImpl(CasualMessageSender casualMessageSender, TimetableService timetableService, HistoryService historyService, UserService userService) {
-        super(casualMessageSender, timetableService, historyService, userService);
+    public KeyboardCommandsProcessorWeekImpl(CasualMessageSender casualMessageSender, TimetableService timetableService, UserService userService) {
+        super(casualMessageSender, timetableService, userService);
     }
 
     @Override
@@ -21,9 +21,14 @@ public class KeyboardCommandsProcessorWeekImpl extends KeyboardCommandsProcessor
     }
 
     @Override
-    public int process(User user, String msg) {
-        casualMessageSender.sendList(timetableService.getWeek(), user);
-        return 0;
+    public void process(User user, String msg) {
+        UserModel userModel = userService.loadOrCreate(user);
+        userModel.getState().week(this, msg);
     }
 
+    @Override
+    public void process(UserModel userModel, String msg) {
+        userService.updateOnline(userModel);
+        casualMessageSender.sendList(timetableService.getWeek(), userModel);
+    }
 }

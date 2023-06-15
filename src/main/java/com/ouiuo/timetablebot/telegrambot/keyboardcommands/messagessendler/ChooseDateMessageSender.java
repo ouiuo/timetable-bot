@@ -1,6 +1,7 @@
 package com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler;
 
 import com.ouiuo.timetablebot.model.TrainingPair;
+import com.ouiuo.timetablebot.model.UserModel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.joda.time.DateTime;
@@ -8,7 +9,6 @@ import org.joda.time.DateTimeZone;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -25,7 +25,7 @@ public class ChooseDateMessageSender implements MessageSender {
     private final TelegramLongPollingBot telegramBot;
 
     @SneakyThrows
-    public void sendList(List<TrainingPair> trainingPairs, User user) {
+    public void sendList(List<TrainingPair> trainingPairs, UserModel user) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy \nEEEE", new Locale("ru"));
         if (!trainingPairs.isEmpty()) {
             Date date = null;

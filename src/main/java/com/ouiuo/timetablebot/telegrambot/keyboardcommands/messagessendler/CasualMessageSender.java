@@ -1,12 +1,12 @@
 package com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler;
 
 import com.ouiuo.timetablebot.model.TrainingPair;
+import com.ouiuo.timetablebot.model.UserModel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -23,7 +23,7 @@ public class CasualMessageSender implements MessageSender{
     private final TelegramLongPollingBot telegramBot;
 
     @SneakyThrows
-    public void sendList(List<TrainingPair> trainingPairs, User user) {
+    public void sendList(List<TrainingPair> trainingPairs, UserModel user) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy \nEEEE", new Locale("ru"));
         if (!trainingPairs.isEmpty()) {
             Date prevClassDate = null;
@@ -33,7 +33,7 @@ public class CasualMessageSender implements MessageSender{
                 TrainingPair trainingPair = iterator.next();
                 classDate = trainingPair.getStartDate();
                 if (prevClassDate == null || prevClassDate.getDate() != classDate.getDate()) {
-                    sendMarkdownText(user.getId(), "`Распиание на " + simpleDateFormat.format(classDate) + "`" + (classDate.getDay() == 3 ? "\uD83D\uDC38" : ""));
+                    sendMarkdownText(user.getId(), "*Распиание на " + simpleDateFormat.format(classDate) + "*" + (classDate.getDay() == 3 ? "\uD83D\uDC38" : ""));
                 }
                 prevClassDate = classDate;
 
@@ -45,7 +45,7 @@ public class CasualMessageSender implements MessageSender{
             }
 
         } else {
-            sendText(user.getId(), "Нет занятий");
+            sendTextWithButtons(user.getId(), "Нет занятий");
         }
     }
 

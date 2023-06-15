@@ -1,7 +1,5 @@
 package com.ouiuo.timetablebot.telegrambot;
 
-import com.ouiuo.timetablebot.model.History;
-import com.ouiuo.timetablebot.service.HistoryService;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.KeyboardCommandsProcessor;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.KeyboardCommands;
 import jakarta.annotation.PostConstruct;
@@ -16,10 +14,8 @@ import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.KeyboardCommands.getCommand;
-import static com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.KeyboardCommands.getPriorityCommand;
 
 @Component
 @RequiredArgsConstructor
@@ -29,8 +25,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final String BOT_NAME = "РГЭУ (РИНХ) Расписание";
     @Value("${telegram.token}")
     private final String TOKEN;
-
-    private final HistoryService historyService;
 
     private final Map<KeyboardCommands, KeyboardCommandsProcessor> keyboardMapProcessors = new HashMap<>();
 
@@ -65,12 +59,10 @@ public class TelegramBot extends TelegramLongPollingBot {
             user = callbackQuery.getFrom();
             msgText = callbackQuery.getData();
         }
-        Optional<History> last = historyService.findLast(user.getId());
         KeyboardCommands command = getCommand(msgText);
-        if (last.isPresent()) {
-            command = getPriorityCommand(command, last.get().getKeyboardCommands());
-        }
-        keyboardMapProcessors.get(command).process(user, msgText, command);
+
+
+        keyboardMapProcessors.get(command).process(user, msgText);
     }
 
     public void registrateCommandProcessor(KeyboardCommands command, KeyboardCommandsProcessor keyboardCommandsProcessor) {

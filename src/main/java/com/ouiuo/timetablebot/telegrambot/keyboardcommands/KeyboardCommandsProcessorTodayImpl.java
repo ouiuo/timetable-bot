@@ -1,6 +1,6 @@
 package com.ouiuo.timetablebot.telegrambot.keyboardcommands;
 
-import com.ouiuo.timetablebot.service.HistoryService;
+import com.ouiuo.timetablebot.model.UserModel;
 import com.ouiuo.timetablebot.service.TimetableService;
 import com.ouiuo.timetablebot.service.UserService;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.KeyboardCommands;
@@ -10,8 +10,14 @@ import org.telegram.telegrambots.meta.api.objects.User;
 
 @Service
 public class KeyboardCommandsProcessorTodayImpl extends KeyboardCommandsProcessorAbstract {
-    public KeyboardCommandsProcessorTodayImpl(CasualMessageSender casualMessageSender, TimetableService timetableService, HistoryService historyService, UserService userService) {
-        super(casualMessageSender, timetableService, historyService, userService);
+    public KeyboardCommandsProcessorTodayImpl(CasualMessageSender casualMessageSender, TimetableService timetableService, UserService userService) {
+        super(casualMessageSender, timetableService, userService);
+    }
+
+    @Override
+    public void process(User user, String msg) {
+        UserModel userModel = userService.loadOrCreate(user);
+        userModel.getState().today(this, msg);
     }
 
     @Override
@@ -20,8 +26,8 @@ public class KeyboardCommandsProcessorTodayImpl extends KeyboardCommandsProcesso
     }
 
     @Override
-    public int process(User user, String msg) {
-        casualMessageSender.sendList(timetableService.getToday(), user);
-        return 0;
+    public void process(UserModel userModel, String msg) {
+        userService.updateOnline(userModel);
+        casualMessageSender.sendList(timetableService.getToday(), userModel);
     }
 }

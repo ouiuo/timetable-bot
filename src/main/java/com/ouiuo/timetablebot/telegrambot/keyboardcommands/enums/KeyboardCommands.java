@@ -5,19 +5,17 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum KeyboardCommands {
-    TODAY("Сегодня", false, false),
-    TOMORROW("Завтра", false, false),
-    WEEK("Неделя", false, false),
-    ON_DATE("Указать дату", false, true),
-    TILL_DATE("Указать дату До", false, true),
-    CANCEL("Отмена", true, false),
-    UNSUPPORTED("Операция не поддерживается", false, false);
+    TODAY("Сегодня"),
+    TOMORROW("Завтра"),
+    WEEK("Неделя"),
+    ON_DATE("Указать дату"),
+
+    INSERT_GROUP("Ввести группу"),
+    TILL_DATE("Указать дату До"),
+    CANCEL("Отмена"),
+    INSERT("Ввод данных");
     @Getter
     private final String command;
-    @Getter
-    private final Boolean isAbort;
-    @Getter
-    private final Boolean isBranching;
 
     public static KeyboardCommands getCommand(String str) {
         for (KeyboardCommands keyboardCommands : values()) {
@@ -25,14 +23,7 @@ public enum KeyboardCommands {
                 return keyboardCommands;
             }
         }
-        return UNSUPPORTED;
+        return INSERT;
     }
 
-    public static KeyboardCommands getPriorityCommand(KeyboardCommands current, KeyboardCommands previous) {
-        if (previous.getIsBranching()) {
-            return current.getIsAbort() ? current : previous;
-        } else {
-            return current;
-        }
-    }
 }

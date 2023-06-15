@@ -1,6 +1,6 @@
 package com.ouiuo.timetablebot.telegrambot.keyboardcommands;
 
-import com.ouiuo.timetablebot.service.HistoryService;
+import com.ouiuo.timetablebot.model.UserModel;
 import com.ouiuo.timetablebot.service.TimetableService;
 import com.ouiuo.timetablebot.service.UserService;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.KeyboardCommands;
@@ -12,8 +12,8 @@ import org.telegram.telegrambots.meta.api.objects.User;
 @Service
 public class KeyboardCommandsProcessorCancelImpl extends KeyboardCommandsProcessorAbstract {
 
-    public KeyboardCommandsProcessorCancelImpl(CasualMessageSender casualMessageSender, TimetableService timetableService, HistoryService historyService, UserService userService) {
-        super(casualMessageSender, timetableService, historyService, userService);
+    public KeyboardCommandsProcessorCancelImpl(CasualMessageSender casualMessageSender, TimetableService timetableService, UserService userService) {
+        super(casualMessageSender, timetableService, userService);
     }
 
     @Override
@@ -23,8 +23,14 @@ public class KeyboardCommandsProcessorCancelImpl extends KeyboardCommandsProcess
 
     @SneakyThrows
     @Override
-    public int process(User user, String msg) {
-        casualMessageSender.sendTextWithButtons(user.getId(), "Выберите действие");
-        return 0;
+    public void process(User user, String msg) {
+        UserModel userModel = userService.loadOrCreate(user);
+        userModel.getState().cancel(this, msg);
+    }
+
+    @Override
+    public void process(UserModel userModel, String msg) {
+        userService.updateOnline(userModel);
+        casualMessageSender.sendTextWithButtons(userModel.getId(), "Выберите действие");
     }
 }
