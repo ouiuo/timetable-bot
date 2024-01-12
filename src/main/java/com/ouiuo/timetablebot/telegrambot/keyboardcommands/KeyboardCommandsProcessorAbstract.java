@@ -4,6 +4,7 @@ import com.ouiuo.timetablebot.model.UserModel;
 import com.ouiuo.timetablebot.service.TimetableService;
 import com.ouiuo.timetablebot.service.UserService;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler.CasualMessageSender;
+import com.ouiuo.timetablebot.telegrambot.keyboardcommands.validator.ValidationResult;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Date;
@@ -27,6 +28,17 @@ public abstract class KeyboardCommandsProcessorAbstract implements KeyboardComma
 
     @Override
     public void unsupportedOnDate(UserModel userModel, String msg) {
+        throw new UnsupportedOperationException("Не поддерживается");
+    }
+
+    @Override
+    public void unsupportedWithCancelButton(UserModel userModel, String errorMsg) {
+        userService.updateOnline(userModel);
+        casualMessageSender.sendTextWithCancelButton(userModel.getId(), errorMsg);
+    }
+
+    @Override
+    public ValidationResult validate(UserModel userModel, String msg) {
         throw new UnsupportedOperationException("Не поддерживается");
     }
 }

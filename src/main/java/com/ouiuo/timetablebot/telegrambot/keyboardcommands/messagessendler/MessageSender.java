@@ -18,6 +18,8 @@ public interface MessageSender {
 
     void sendTextWithButtons(Long who, String what);
 
+    void sendTextWithCancelButton(Long who, String what);
+
     ReplyKeyboardMarkup replyKeyboardMarkup();
 
     List<KeyboardRow> keyboardRows();

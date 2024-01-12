@@ -94,7 +94,7 @@ public class ChooseDateMessageSender implements MessageSender {
 
     public List<KeyboardRow> keyboardRows() {
         List<KeyboardRow> rows = new ArrayList<>(keyboardRowsCalendar());
-        rows.add(new KeyboardRow(keyboardButtonsFirstLine()));
+        rows.add(new KeyboardRow(keyboardCancelButtonLine()));
         return rows;
     }
 
@@ -120,10 +120,21 @@ public class ChooseDateMessageSender implements MessageSender {
         return keyboardRows;
     }
 
-    public List<KeyboardButton> keyboardButtonsFirstLine() {
+    public List<KeyboardButton> keyboardCancelButtonLine() {
         List<KeyboardButton> buttons = new ArrayList<>();
         buttons.add(new KeyboardButton(CANCEL.getCommand()));
         return buttons;
     }
 
+    @SneakyThrows
+    @Override
+    public void sendTextWithCancelButton(Long who, String what) {
+        SendMessage sm = SendMessage.builder()
+                .chatId(who.toString())
+                .text(what)
+                .replyMarkup(replyKeyboardMarkup())
+                .build();
+
+        telegramBot.execute(sm);
+    }
 }

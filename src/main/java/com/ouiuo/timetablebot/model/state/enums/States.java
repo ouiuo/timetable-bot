@@ -4,7 +4,9 @@ import lombok.Getter;
 
 public enum States {
     NORMIS("NORMIS"),
-    ON_DATE("ON DATE");
+    ON_DATE("ON DATE"),
+
+    SELECT_GROUP("SELECT GROUP");
     @Getter
     private String name;
 

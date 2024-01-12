@@ -18,7 +18,7 @@ import static com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.Keyboard
 
 @Service
 @RequiredArgsConstructor
-public class CasualMessageSender implements MessageSender{
+public class CasualMessageSender implements MessageSender {
 
     private final TelegramLongPollingBot telegramBot;
 
@@ -113,4 +113,29 @@ public class CasualMessageSender implements MessageSender{
         return buttons;
     }
 
+    @SneakyThrows
+    @Override
+    public void sendTextWithCancelButton(Long who, String what) {
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+        keyboardRows.add(new KeyboardRow(keyboardCancelButtonLine()));
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setSelective(false);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+        replyKeyboardMarkup.setKeyboard(keyboardRows);
+
+        SendMessage sm = SendMessage.builder()
+                .chatId(who.toString())
+                .text(what)
+                .replyMarkup(replyKeyboardMarkup)
+                .build();
+
+        telegramBot.execute(sm);
+    }
+
+    public List<KeyboardButton> keyboardCancelButtonLine() {
+        List<KeyboardButton> buttons = new ArrayList<>();
+        buttons.add(new KeyboardButton(CANCEL.getCommand()));
+        return buttons;
+    }
 }

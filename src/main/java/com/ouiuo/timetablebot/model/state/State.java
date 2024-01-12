@@ -21,4 +21,6 @@ public interface State {
     void cancel(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg);
 
     void insert(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg);
+
+    void selectGroup(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg);
 }

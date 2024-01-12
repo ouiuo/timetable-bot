@@ -51,4 +51,10 @@ public class NormisState implements State {
     public void cancel(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg) {
         keyboardCommandsProcessor.unsupported(userModel, msg);
     }
+
+    @Override
+    public void selectGroup(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg) {
+        userModel.setState(userModel.getSelectGroupState());
+        keyboardCommandsProcessor.process(userModel, msg);
+    }
 }

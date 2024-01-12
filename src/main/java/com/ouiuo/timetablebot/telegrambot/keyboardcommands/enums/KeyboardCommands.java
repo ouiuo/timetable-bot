@@ -13,7 +13,9 @@ public enum KeyboardCommands {
     INSERT_GROUP("Ввести группу"),
     TILL_DATE("Указать дату До"),
     CANCEL("Отмена"),
-    INSERT("Ввод данных");
+    INSERT("Ввод данных"),
+
+    SELECT_GROUP("/selectgroup");
     @Getter
     private final String command;
 

@@ -2,10 +2,9 @@ package com.ouiuo.timetablebot.model;
 
 import com.ouiuo.timetablebot.model.state.NormisState;
 import com.ouiuo.timetablebot.model.state.OnDateState;
+import com.ouiuo.timetablebot.model.state.SelectGroupState;
 import com.ouiuo.timetablebot.model.state.State;
-import com.ouiuo.timetablebot.model.utils.KeyboardCommandsConverter;
 import com.ouiuo.timetablebot.model.utils.StateConverter;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,6 +18,9 @@ public class UserModel {
 
     @Transient
     private OnDateState onDateState = new OnDateState(this);
+
+    @Transient
+    private SelectGroupState selectGroupState = new SelectGroupState(this);
     @Id
     private Long id;
 
@@ -30,12 +32,12 @@ public class UserModel {
     @JoinColumn(name = "group_id")
     private Group group;
 
-//    @Transient
+    //    @Transient
     @Convert(converter = StateConverter.class)
     private State state;
 
     @PostLoad
-    public void init(){
+    public void init() {
         getState().setUserModel(this);
     }
 
