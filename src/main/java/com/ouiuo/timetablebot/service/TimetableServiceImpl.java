@@ -1,6 +1,7 @@
 package com.ouiuo.timetablebot.service;
 
 import com.ouiuo.timetablebot.dao.ClassesRepository;
+import com.ouiuo.timetablebot.model.Group;
 import com.ouiuo.timetablebot.model.TrainingPair;
 import com.ouiuo.timetablebot.model.UserModel;
 import org.joda.time.DateTime;
@@ -61,12 +62,17 @@ public class TimetableServiceImpl implements TimetableService {
     }
 
     @Override
-    public List<TrainingPair> getOnDate(Date parse) {
+    public List<TrainingPair> getOnDate(Date parse, UserModel userModel) {
         DateTime todayDateTime = getTodayDateTime();
         DateTime dateTime = new DateTime(parse);
         dateTime = dateTime.withYear(todayDateTime.getYear());
         Date startDate = dateTime.withHourOfDay(0).toDate();
         Date endDate = dateTime.withHourOfDay(23).toDate();
-        return classesRepository.findAllByStartDateGreaterThanEqualAndEndDateLessThanEqual(startDate, endDate);
+        return classesRepository.findAllByGroupIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(userModel.getGroup().getId(), startDate, endDate);
+    }
+
+    @Override
+    public boolean isExistByGroup(Group group) {
+        return classesRepository.existsByGroupId(group.getId());
     }
 }

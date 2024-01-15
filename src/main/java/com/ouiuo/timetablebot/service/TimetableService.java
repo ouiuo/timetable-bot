@@ -1,5 +1,6 @@
 package com.ouiuo.timetablebot.service;
 
+import com.ouiuo.timetablebot.model.Group;
 import com.ouiuo.timetablebot.model.TrainingPair;
 import com.ouiuo.timetablebot.model.UserModel;
 
@@ -17,5 +18,7 @@ public interface TimetableService {
 
     List<TrainingPair> getALl();
 
-    List<TrainingPair> getOnDate(Date parse);
+    List<TrainingPair> getOnDate(Date parse, UserModel userModel);
+
+    boolean isExistByGroup(Group group);
 }

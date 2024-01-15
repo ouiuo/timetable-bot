@@ -1,5 +1,6 @@
 package com.ouiuo.timetablebot.telegrambot.keyboardcommands;
 
+import com.ouiuo.timetablebot.client.TimetableClient;
 import com.ouiuo.timetablebot.exception.TimetableBotException;
 import com.ouiuo.timetablebot.model.Group;
 import com.ouiuo.timetablebot.model.UserModel;
@@ -19,9 +20,12 @@ public class KeyboardCommandsProcessorInsertImpl extends KeyboardCommandsProcess
 
     private final GroupService groupService;
 
-    public KeyboardCommandsProcessorInsertImpl(TimetableService timetableService, UserService userService, GroupService groupService) {
+    private final TimetableClient timetableClient;
+
+    public KeyboardCommandsProcessorInsertImpl(TimetableService timetableService, UserService userService, GroupService groupService, TimetableClient timetableClient) {
         super(timetableService, userService);
         this.groupService = groupService;
+        this.timetableClient = timetableClient;
     }
 
     @Override
@@ -42,6 +46,9 @@ public class KeyboardCommandsProcessorInsertImpl extends KeyboardCommandsProcess
             Group group = groupService.findGroup(msg);
             userModel.setGroup(group);
             userModel.setState(userModel.getNormisState());
+            if (!timetableService.isExistByGroup(group)) {
+                timetableClient.updateByGroupId(group.getId());
+            }
 
         } catch (TimetableBotException e) {
             userService.updateOnline(userModel);
@@ -55,7 +62,7 @@ public class KeyboardCommandsProcessorInsertImpl extends KeyboardCommandsProcess
     @Override
     public void processOnDate(UserModel userModel, Date date) {
         userService.updateOnline(userModel);
-        messageSenderMap.get(MessageType.CASUAL).sendList(timetableService.getOnDate(date), userModel);
+        messageSenderMap.get(MessageType.CASUAL).sendList(timetableService.getOnDate(date, userModel), userModel);
     }
 
 

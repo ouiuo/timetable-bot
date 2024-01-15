@@ -15,4 +15,6 @@ public interface ClassesRepository extends JpaRepository<TrainingPair, Long> {
 
     List<TrainingPair> findAllByGroupIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(UUID groupId, Date startDate, Date endDate);
 
+
+    boolean existsByGroupId(UUID groupId);
 }

@@ -31,15 +31,20 @@ public class TrainingPair {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         return String.format("%s %s %s \n" +
                 "%s-%s \n" +
-                "%s ", className.substring(0, 16), classType, addressName, sdf.format(startDate), sdf.format(endDate), lectureName);
+                "%s ", className.substring(0, 16), classType,
+                addressName.replace("*", "\nОстровского 62, К")
+                        .replace("#", "\nГорького 166, К")
+                        .replace("&", "\nТургеневская 49, К"), sdf.format(startDate), sdf.format(endDate), lectureName);
     }
 
     public StringBuffer toStringBuffer() {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         StringBuffer stringBuffer = new StringBuffer()
-                .append(className, 0, Math.min(className.length(), 16)).append(" ")
+                .append(className, 0, Math.min(className.length(), 19)).append(" ")
                 .append(classType).append(" ")
-                .append(addressName).append("\n")
+                .append(addressName.replace("*", "\nОстровского 62, К")
+                        .replace("#", "\nГорького 166, К")
+                        .replace("&", "\nТургеневская 49, К")).append("\n")
                 .append(sdf.format(startDate)).append("-").append(sdf.format(endDate)).append("\n")
                 .append(lectureName).append("\n");
 
