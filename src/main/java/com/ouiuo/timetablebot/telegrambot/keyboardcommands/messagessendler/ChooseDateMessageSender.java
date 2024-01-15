@@ -42,7 +42,7 @@ public class ChooseDateMessageSender implements MessageSender {
                 if (iterator.hasNext()) {
                     sendText(user.getId(), trainingPair.toStringBuffer().toString());
                 } else {
-                    sendTextWithButtons(user.getId(), trainingPair.toStringBuffer().toString());
+                    sendTextWithButtons(user, trainingPair.toStringBuffer().toString());
                 }
             }
 
@@ -72,27 +72,28 @@ public class ChooseDateMessageSender implements MessageSender {
     }
 
     @SneakyThrows
-    public void sendTextWithButtons(Long who, String what) {
+    public void sendTextWithButtons(UserModel userModel, String what) {
+        Long who = userModel.getId();
         SendMessage sm = SendMessage.builder()
                 .chatId(who.toString())
                 .text(what)
-                .replyMarkup(replyKeyboardMarkup())
+                .replyMarkup(replyKeyboardMarkup(userModel))
                 .build();
 
         telegramBot.execute(sm);
     }
 
-    public ReplyKeyboardMarkup replyKeyboardMarkup() {
+    public ReplyKeyboardMarkup replyKeyboardMarkup(UserModel userModel) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setSelective(false);
         replyKeyboardMarkup.setResizeKeyboard(true);
         replyKeyboardMarkup.setOneTimeKeyboard(false);
-        replyKeyboardMarkup.setKeyboard(keyboardRows());
+        replyKeyboardMarkup.setKeyboard(keyboardRows(userModel));
 
         return replyKeyboardMarkup;
     }
 
-    public List<KeyboardRow> keyboardRows() {
+    public List<KeyboardRow> keyboardRows(UserModel userModel) {
         List<KeyboardRow> rows = new ArrayList<>(keyboardRowsCalendar());
         rows.add(new KeyboardRow(keyboardCancelButtonLine()));
         return rows;
@@ -128,13 +129,19 @@ public class ChooseDateMessageSender implements MessageSender {
 
     @SneakyThrows
     @Override
-    public void sendTextWithCancelButton(Long who, String what) {
+    public void sendTextWithCancelButton(UserModel userModel, String what) {
+        Long who = userModel.getId();
         SendMessage sm = SendMessage.builder()
                 .chatId(who.toString())
                 .text(what)
-                .replyMarkup(replyKeyboardMarkup())
+                .replyMarkup(replyKeyboardMarkup(userModel))
                 .build();
 
         telegramBot.execute(sm);
+    }
+
+    @Override
+    public MessageType getType() {
+        return MessageType.CHOOSE_DATE;
     }
 }

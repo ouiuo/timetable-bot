@@ -3,7 +3,7 @@ package com.ouiuo.timetablebot.telegrambot.keyboardcommands;
 import com.ouiuo.timetablebot.model.UserModel;
 import com.ouiuo.timetablebot.telegrambot.TelegramBot;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.KeyboardCommands;
-import com.ouiuo.timetablebot.telegrambot.keyboardcommands.validator.ValidationResult;
+import com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler.MessageSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.objects.User;
 
@@ -17,10 +17,8 @@ public interface KeyboardCommandsProcessor {
         telegramBot.registrateCommandProcessor(getCommand(), this);
     }
 
-    @Autowired
-    default void register2(TelegramBotMockService telegramBotMockService) {
-        telegramBotMockService.registrateCommandProcessor(getCommand(), this);
-    }
+    void register(MessageSender messageSender);
+
 
     void process(User user, String msg);
 
@@ -31,8 +29,6 @@ public interface KeyboardCommandsProcessor {
     void process(UserModel userModel, String msg);
 
     void processOnDate(UserModel userModel, Date date);
-
-    ValidationResult validate(UserModel userModel, String msg);
 
     void unsupportedWithCancelButton(UserModel userModel, String msg);
 

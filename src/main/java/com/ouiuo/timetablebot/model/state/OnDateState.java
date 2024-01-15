@@ -28,23 +28,23 @@ public class OnDateState implements State {
 
     @Override
     public void today(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg) {
-        keyboardCommandsProcessor.unsupported(userModel, msg);
+        keyboardCommandsProcessor.unsupportedOnDate(userModel, msg);
     }
 
 
     @Override
     public void tomorrow(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg) {
-        keyboardCommandsProcessor.unsupported(userModel, msg);
+        keyboardCommandsProcessor.unsupportedOnDate(userModel, msg);
     }
 
     @Override
     public void week(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg) {
-        keyboardCommandsProcessor.unsupported(userModel, msg);
+        keyboardCommandsProcessor.unsupportedOnDate(userModel, msg);
     }
 
     @Override
     public void onDate(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg) {
-        keyboardCommandsProcessor.unsupported(userModel, msg);
+        keyboardCommandsProcessor.unsupportedOnDate(userModel, msg);
     }
 
     @Override
@@ -67,8 +67,6 @@ public class OnDateState implements State {
 
     @Override
     public void selectGroup(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg) {
-//        Boolean validate = keyboardCommandsProcessor.validate(userModel, msg);
-
-        keyboardCommandsProcessor.unsupported(userModel, msg);
+        keyboardCommandsProcessor.unsupportedOnDate(userModel, msg);
     }
 }

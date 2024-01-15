@@ -6,6 +6,8 @@ public enum States {
     NORMIS("NORMIS"),
     ON_DATE("ON DATE"),
 
+    NEW("NEW"),
+
     SELECT_GROUP("SELECT GROUP");
     @Getter
     private String name;

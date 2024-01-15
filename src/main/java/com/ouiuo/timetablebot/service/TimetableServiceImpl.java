@@ -2,6 +2,7 @@ package com.ouiuo.timetablebot.service;
 
 import com.ouiuo.timetablebot.dao.ClassesRepository;
 import com.ouiuo.timetablebot.model.TrainingPair;
+import com.ouiuo.timetablebot.model.UserModel;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,24 +17,24 @@ public class TimetableServiceImpl implements TimetableService {
     ClassesRepository classesRepository;
 
     @Override
-    public List<TrainingPair> getToday() {
+    public List<TrainingPair> getToday(UserModel userModel) {
         Date startDate = getTodayDateTime().withHourOfDay(0).toDate();
         Date endDate = getTodayDateTime().withHourOfDay(23).toDate();
-        return classesRepository.findAllByStartDateGreaterThanEqualAndEndDateLessThanEqual(startDate, endDate);
+        return classesRepository.findAllByGroupIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(userModel.getGroup().getId(), startDate, endDate);
     }
 
     @Override
-    public List<TrainingPair> getTomorrow() {
+    public List<TrainingPair> getTomorrow(UserModel userModel) {
         Date startDate = getTomorrowDateTime().withHourOfDay(0).toDate();
         Date endDate = getTomorrowDateTime().withHourOfDay(23).toDate();
-        return classesRepository.findAllByStartDateGreaterThanEqualAndEndDateLessThanEqual(startDate, endDate);
+        return classesRepository.findAllByGroupIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(userModel.getGroup().getId(), startDate, endDate);
     }
 
     @Override
-    public List<TrainingPair> getWeek() {
+    public List<TrainingPair> getWeek(UserModel userModel) {
         Date startDate = getTodayDateTime().withHourOfDay(0).toDate();
         Date endDate = getWeekDateTime().withHourOfDay(23).toDate();
-        return classesRepository.findAllByStartDateGreaterThanEqualAndEndDateLessThanEqual(startDate, endDate);
+        return classesRepository.findAllByGroupIdAndStartDateGreaterThanEqualAndEndDateLessThanEqual(userModel.getGroup().getId(), startDate, endDate);
     }
 
 

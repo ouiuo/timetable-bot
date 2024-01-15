@@ -40,12 +40,12 @@ public class CasualMessageSender implements MessageSender {
                 if (iterator.hasNext()) {
                     sendText(user.getId(), trainingPair.toStringBuffer().toString());
                 } else {
-                    sendTextWithButtons(user.getId(), trainingPair.toStringBuffer().toString());
+                    sendTextWithButtons(user, trainingPair.toStringBuffer().toString());
                 }
             }
 
         } else {
-            sendTextWithButtons(user.getId(), "Нет занятий");
+            sendTextWithButtons(user, "Нет занятий");
         }
     }
 
@@ -70,30 +70,31 @@ public class CasualMessageSender implements MessageSender {
     }
 
     @SneakyThrows
-    public void sendTextWithButtons(Long who, String what) {
+    public void sendTextWithButtons(UserModel userModel, String what) {
+        Long who = userModel.getId();
         SendMessage sm = SendMessage.builder()
                 .chatId(who.toString())
                 .text(what)
-                .replyMarkup(replyKeyboardMarkup())
+                .replyMarkup(replyKeyboardMarkup(userModel))
                 .build();
 
         telegramBot.execute(sm);
     }
 
-    public ReplyKeyboardMarkup replyKeyboardMarkup() {
+    public ReplyKeyboardMarkup replyKeyboardMarkup(UserModel userModel) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setSelective(false);
         replyKeyboardMarkup.setResizeKeyboard(true);
         replyKeyboardMarkup.setOneTimeKeyboard(false);
-        replyKeyboardMarkup.setKeyboard(keyboardRows());
+        replyKeyboardMarkup.setKeyboard(keyboardRows(userModel));
 
         return replyKeyboardMarkup;
     }
 
-    public List<KeyboardRow> keyboardRows() {
+    public List<KeyboardRow> keyboardRows(UserModel userModel) {
         List<KeyboardRow> rows = new ArrayList<>();
-        rows.add(new KeyboardRow(keyboardButtonsFirstLine()));
-//        rows.add(new KeyboardRow(keyboardButtonsSecondLine()));
+        rows.add(new KeyboardRow(keyboardButtonsFirstLine(userModel)));
+
         return rows;
     }
 
@@ -103,19 +104,25 @@ public class CasualMessageSender implements MessageSender {
         return buttons;
     }
 
-    public List<KeyboardButton> keyboardButtonsFirstLine() {
+    public List<KeyboardButton> keyboardButtonsFirstLine(UserModel userModel) {
         List<KeyboardButton> buttons = new ArrayList<>();
-        buttons.add(new KeyboardButton(TODAY.getCommand()));
-        buttons.add(new KeyboardButton(TOMORROW.getCommand()));
-        buttons.add(new KeyboardButton(WEEK.getCommand()));
-        buttons.add(new KeyboardButton(ON_DATE.getCommand()));
+        if (userModel.getGroup() != null) {
+            buttons.add(new KeyboardButton(TODAY.getCommand()));
+            buttons.add(new KeyboardButton(TOMORROW.getCommand()));
+            buttons.add(new KeyboardButton(WEEK.getCommand()));
+            buttons.add(new KeyboardButton(ON_DATE.getCommand()));
+        } else {
+            buttons.add(new KeyboardButton(SELECT_GROUP.getCommand()));
+        }
 
         return buttons;
     }
 
     @SneakyThrows
     @Override
-    public void sendTextWithCancelButton(Long who, String what) {
+    public void sendTextWithCancelButton(UserModel userModel, String what) {
+        Long who = userModel.getId();
+
         List<KeyboardRow> keyboardRows = new ArrayList<>();
         keyboardRows.add(new KeyboardRow(keyboardCancelButtonLine()));
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
@@ -137,5 +144,10 @@ public class CasualMessageSender implements MessageSender {
         List<KeyboardButton> buttons = new ArrayList<>();
         buttons.add(new KeyboardButton(CANCEL.getCommand()));
         return buttons;
+    }
+
+    @Override
+    public MessageType getType() {
+        return MessageType.CASUAL;
     }
 }

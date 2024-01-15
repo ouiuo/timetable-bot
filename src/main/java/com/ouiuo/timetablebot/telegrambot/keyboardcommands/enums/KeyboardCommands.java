@@ -1,27 +1,33 @@
 package com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+import java.util.List;
+
 public enum KeyboardCommands {
     TODAY("Сегодня"),
     TOMORROW("Завтра"),
     WEEK("Неделя"),
     ON_DATE("Указать дату"),
-
-    INSERT_GROUP("Ввести группу"),
     TILL_DATE("Указать дату До"),
     CANCEL("Отмена"),
     INSERT("Ввод данных"),
 
-    SELECT_GROUP("/selectgroup");
+    SELECT_GROUP("Ввести группу", "/selectgroup");
     @Getter
-    private final String command;
+    private final List<String> commands;
+
+    KeyboardCommands(String... command) {
+        this.commands = List.of(command);
+    }
+
+    public String getCommand() {
+        return commands.get(0);
+    }
 
     public static KeyboardCommands getCommand(String str) {
         for (KeyboardCommands keyboardCommands : values()) {
-            if (keyboardCommands.getCommand().equalsIgnoreCase(str)) {
+            if (keyboardCommands.getCommands().contains(str)) {
                 return keyboardCommands;
             }
         }

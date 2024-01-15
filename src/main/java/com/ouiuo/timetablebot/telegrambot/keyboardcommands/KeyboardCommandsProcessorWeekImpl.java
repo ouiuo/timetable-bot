@@ -4,15 +4,15 @@ import com.ouiuo.timetablebot.model.UserModel;
 import com.ouiuo.timetablebot.service.TimetableService;
 import com.ouiuo.timetablebot.service.UserService;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.KeyboardCommands;
-import com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler.CasualMessageSender;
+import com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler.MessageType;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 @Service
 public class KeyboardCommandsProcessorWeekImpl extends KeyboardCommandsProcessorAbstract {
 
-    public KeyboardCommandsProcessorWeekImpl(CasualMessageSender casualMessageSender, TimetableService timetableService, UserService userService) {
-        super(casualMessageSender, timetableService, userService);
+    public KeyboardCommandsProcessorWeekImpl(TimetableService timetableService, UserService userService) {
+        super(timetableService, userService);
     }
 
     @Override
@@ -29,6 +29,6 @@ public class KeyboardCommandsProcessorWeekImpl extends KeyboardCommandsProcessor
     @Override
     public void process(UserModel userModel, String msg) {
         userService.updateOnline(userModel);
-        casualMessageSender.sendList(timetableService.getWeek(), userModel);
+        messageSenderMap.get(MessageType.CASUAL).sendList(timetableService.getWeek(userModel), userModel);
     }
 }

@@ -7,23 +7,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import static com.ouiuo.timetablebot.model.state.enums.States.SELECT_GROUP;
+import static com.ouiuo.timetablebot.model.state.enums.States.NEW;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class SelectGroupState implements State {
-
+public class NewState implements State {
     private UserModel userModel;
 
     @Override
-    public void setUserModel(UserModel userModel) {
-        this.userModel = userModel;
-    }
-
-    @Override
     public States getState() {
-        return SELECT_GROUP;
+        return NEW;
     }
 
     @Override
@@ -48,17 +42,17 @@ public class SelectGroupState implements State {
 
     @Override
     public void cancel(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg) {
-        userModel.setState(userModel.getNormisState());
-        keyboardCommandsProcessor.process(userModel, msg);
+        keyboardCommandsProcessor.unsupported(userModel, msg);
     }
 
     @Override
     public void insert(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg) {
-        keyboardCommandsProcessor.process(userModel, msg);
+        keyboardCommandsProcessor.unsupported(userModel, msg);
     }
 
     @Override
     public void selectGroup(KeyboardCommandsProcessor keyboardCommandsProcessor, String msg) {
-        keyboardCommandsProcessor.unsupportedWithCancelButton(userModel, "Команда не поддерживается");
+        userModel.setState(userModel.getSelectGroupState());
+        keyboardCommandsProcessor.process(userModel, msg);
     }
 }

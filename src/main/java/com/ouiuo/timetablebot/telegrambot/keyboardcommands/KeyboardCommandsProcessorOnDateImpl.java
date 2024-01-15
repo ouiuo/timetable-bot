@@ -4,8 +4,7 @@ import com.ouiuo.timetablebot.model.UserModel;
 import com.ouiuo.timetablebot.service.TimetableService;
 import com.ouiuo.timetablebot.service.UserService;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.KeyboardCommands;
-import com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler.CasualMessageSender;
-import com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler.MessageSender;
+import com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler.MessageType;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -20,11 +19,9 @@ import static com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.Keyboard
 @Service
 @Slf4j
 public class KeyboardCommandsProcessorOnDateImpl extends KeyboardCommandsProcessorAbstract {
-    private final MessageSender chooseDateMessageSender;
 
-    public KeyboardCommandsProcessorOnDateImpl(CasualMessageSender casualMessageSender, TimetableService timetableService, UserService userService, MessageSender chooseDateMessageSender) {
-        super(casualMessageSender, timetableService, userService);
-        this.chooseDateMessageSender = chooseDateMessageSender;
+    public KeyboardCommandsProcessorOnDateImpl(TimetableService timetableService, UserService userService) {
+        super(timetableService, userService);
     }
 
     @Override
@@ -43,7 +40,7 @@ public class KeyboardCommandsProcessorOnDateImpl extends KeyboardCommandsProcess
         userService.updateOnline(userModel);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM", new Locale("ru"));
         DateTime now = DateTime.now(DateTimeZone.forID("Europe/Moscow"));
-        chooseDateMessageSender.sendTextWithButtons(userModel.getId(), "Укажите дату в формате дд.мм например сегодня " + simpleDateFormat.format(now.toDate()));
+        messageSenderMap.get(MessageType.CHOOSE_DATE).sendTextWithButtons(userModel, "Укажите дату в формате дд.мм например сегодня " + simpleDateFormat.format(now.toDate()));
     }
 }
 

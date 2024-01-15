@@ -1,9 +1,6 @@
 package com.ouiuo.timetablebot.model;
 
-import com.ouiuo.timetablebot.model.state.NormisState;
-import com.ouiuo.timetablebot.model.state.OnDateState;
-import com.ouiuo.timetablebot.model.state.SelectGroupState;
-import com.ouiuo.timetablebot.model.state.State;
+import com.ouiuo.timetablebot.model.state.*;
 import com.ouiuo.timetablebot.model.utils.StateConverter;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -14,10 +11,12 @@ import java.util.Date;
 @Entity(name = "users")
 public class UserModel {
     @Transient
-    private NormisState normisState = new NormisState(this);
+    private State normisState = new NormisState(this);
 
     @Transient
-    private OnDateState onDateState = new OnDateState(this);
+    private State onDateState = new OnDateState(this);
+    @Transient
+    private State newState = new NewState(this);
 
     @Transient
     private SelectGroupState selectGroupState = new SelectGroupState(this);
@@ -32,7 +31,6 @@ public class UserModel {
     @JoinColumn(name = "group_id")
     private Group group;
 
-    //    @Transient
     @Convert(converter = StateConverter.class)
     private State state;
 
@@ -49,6 +47,7 @@ public class UserModel {
     public UserModel(org.telegram.telegrambots.meta.api.objects.User user) {
         this.id = user.getId();
         last = new Date();
+        state = newState;
         numbers = 0;
     }
 

@@ -4,15 +4,15 @@ import com.ouiuo.timetablebot.model.UserModel;
 import com.ouiuo.timetablebot.service.TimetableService;
 import com.ouiuo.timetablebot.service.UserService;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.KeyboardCommands;
-import com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler.CasualMessageSender;
+import com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler.MessageType;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 @Service
 public class KeyboardCommandsProcessorSelectGroupImpl extends KeyboardCommandsProcessorAbstract {
 
-    public KeyboardCommandsProcessorSelectGroupImpl(CasualMessageSender casualMessageSender, TimetableService timetableService, UserService userService) {
-        super(casualMessageSender, timetableService, userService);
+    public KeyboardCommandsProcessorSelectGroupImpl(TimetableService timetableService, UserService userService) {
+        super(timetableService, userService);
     }
 
     @Override
@@ -29,6 +29,6 @@ public class KeyboardCommandsProcessorSelectGroupImpl extends KeyboardCommandsPr
     @Override
     public void process(UserModel userModel, String msg) {
         userService.updateOnline(userModel);
-        casualMessageSender.sendTextWithCancelButton(userModel.getId(), "Введите имя группы и номер через пробел, например ПМИOZ 311 или ПМИOZ-311");
+        messageSenderMap.get(MessageType.CASUAL).sendTextWithCancelButton(userModel, "Введите имя группы и номер через пробел, например ПМИOZ 311 или ПМИOZ-311");
     }
 }

@@ -1,37 +1,27 @@
 package com.ouiuo.timetablebot.telegrambot.keyboardcommands;
 
+import com.ouiuo.timetablebot.exception.TimetableBotException;
+import com.ouiuo.timetablebot.model.Group;
 import com.ouiuo.timetablebot.model.UserModel;
-import com.ouiuo.timetablebot.model.state.enums.States;
+import com.ouiuo.timetablebot.service.GroupService;
 import com.ouiuo.timetablebot.service.TimetableService;
 import com.ouiuo.timetablebot.service.UserService;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.KeyboardCommands;
-import com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler.CasualMessageSender;
-import com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler.ChooseDateMessageSender;
-import com.ouiuo.timetablebot.telegrambot.keyboardcommands.validator.ValidationResult;
-import com.ouiuo.timetablebot.telegrambot.keyboardcommands.validator.Validator;
-import com.ouiuo.timetablebot.telegrambot.keyboardcommands.validator.ValidatorAware;
+import com.ouiuo.timetablebot.telegrambot.keyboardcommands.messagessendler.MessageType;
 import lombok.SneakyThrows;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 @Service
-public class KeyboardCommandsProcessorInsertImpl extends KeyboardCommandsProcessorAbstract implements ValidatorAware {
+public class KeyboardCommandsProcessorInsertImpl extends KeyboardCommandsProcessorAbstract {
 
-    protected final ChooseDateMessageSender chooseDateMessageSender;
+    private final GroupService groupService;
 
-    protected final Map<States, Validator> validatorMap = new HashMap<>();
-
-    public KeyboardCommandsProcessorInsertImpl(CasualMessageSender casualMessageSender, TimetableService timetableService, UserService userService, ChooseDateMessageSender chooseDateMessageSender) {
-        super(casualMessageSender, timetableService, userService);
-        this.chooseDateMessageSender = chooseDateMessageSender;
+    public KeyboardCommandsProcessorInsertImpl(TimetableService timetableService, UserService userService, GroupService groupService) {
+        super(timetableService, userService);
+        this.groupService = groupService;
     }
 
     @Override
@@ -48,32 +38,25 @@ public class KeyboardCommandsProcessorInsertImpl extends KeyboardCommandsProcess
 
     @Override
     public void process(UserModel userModel, String msg) {
+        try {
+            Group group = groupService.findGroup(msg);
+            userModel.setGroup(group);
+            userModel.setState(userModel.getNormisState());
+
+        } catch (TimetableBotException e) {
+            userService.updateOnline(userModel);
+            unsupportedWithCancelButton(userModel, e.getMessage());
+            return;
+        }
         userService.updateOnline(userModel);
-        casualMessageSender.sendTextWithButtons(userModel.getId(), "Выберите действие");
+        messageSenderMap.get(MessageType.CASUAL).sendTextWithButtons(userModel, "Группа успешно выбрана. Выберите действие");
     }
 
     @Override
     public void processOnDate(UserModel userModel, Date date) {
         userService.updateOnline(userModel);
-        casualMessageSender.sendList(timetableService.getOnDate(date), userModel);
+        messageSenderMap.get(MessageType.CASUAL).sendList(timetableService.getOnDate(date), userModel);
     }
 
-    @Override
-    public void unsupportedOnDate(UserModel userModel, String msg) {
-        userService.updateOnline(userModel);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM", new Locale("ru"));
-        DateTime now = DateTime.now(DateTimeZone.forID("Europe/Moscow"));
-        chooseDateMessageSender.sendTextWithButtons(userModel.getId(), "Ошибка\n" +
-                "Укажите дату в формате дд.мм например сегодня " + simpleDateFormat.format(now.toDate()));
-    }
 
-    @Override
-    public void registrateValidator(States states, Validator validator) {
-        validatorMap.put(states, validator);
-    }
-
-    @Override
-    public ValidationResult validate(UserModel userModel, String msg) {
-        return validatorMap.get(userModel.getState().getState()).validate(msg);
-    }
 }

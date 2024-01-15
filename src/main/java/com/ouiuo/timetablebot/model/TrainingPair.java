@@ -1,9 +1,6 @@
 package com.ouiuo.timetablebot.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.text.SimpleDateFormat;
@@ -23,6 +20,11 @@ public class TrainingPair {
     private Date endDate;
 
     private Date updateDate;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id", nullable = false)
+    private Group group;
+
 
 
     public String toString() {

@@ -1,16 +1,17 @@
 package com.ouiuo.timetablebot.service;
 
 import com.ouiuo.timetablebot.model.TrainingPair;
+import com.ouiuo.timetablebot.model.UserModel;
 
 import java.util.Date;
 import java.util.List;
 
 public interface TimetableService {
-    List<TrainingPair> getToday();
+    List<TrainingPair> getToday(UserModel userModel);
 
-    List<TrainingPair> getTomorrow();
+    List<TrainingPair> getTomorrow(UserModel userModel);
 
-    List<TrainingPair> getWeek();
+    List<TrainingPair> getWeek(UserModel userModel);
 
     TrainingPair getByDate();
 

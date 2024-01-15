@@ -1,5 +1,6 @@
 package com.ouiuo.timetablebot.telegrambot;
 
+import com.ouiuo.timetablebot.model.state.State;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.KeyboardCommandsProcessor;
 import com.ouiuo.timetablebot.telegrambot.keyboardcommands.enums.KeyboardCommands;
 import jakarta.annotation.PostConstruct;

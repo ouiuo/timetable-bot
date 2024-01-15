@@ -1,9 +1,6 @@
 package com.ouiuo.timetablebot.factory;
 
-import com.ouiuo.timetablebot.model.state.NormisState;
-import com.ouiuo.timetablebot.model.state.OnDateState;
-import com.ouiuo.timetablebot.model.state.SelectGroupState;
-import com.ouiuo.timetablebot.model.state.State;
+import com.ouiuo.timetablebot.model.state.*;
 import com.ouiuo.timetablebot.model.state.enums.States;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +15,8 @@ public class StateFactory {
             return new OnDateState();
         } else if (SELECT_GROUP.equals(states)) {
             return new SelectGroupState();
+        } else if (NEW.equals(states)) {
+            return new NewState();
         }
         return new NormisState();
     }
